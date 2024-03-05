@@ -19,7 +19,7 @@ class _MultipleAnimationsState extends State<MultipleAnimations>
     // Definir el controlador de animación
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2),
+      duration: Duration(seconds: 1),
     );
 
     // Definir la animación de escala
