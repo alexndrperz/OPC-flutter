@@ -1,93 +1,164 @@
 import 'package:flutter/material.dart';
 
-class MultipleAnimations extends StatefulWidget {
+class ListScreen extends StatefulWidget {
+  const ListScreen({Key? key}) : super(key: key);
+
   @override
-  _MultipleAnimationsState createState() => _MultipleAnimationsState();
+  State<ListScreen> createState() => _ListScreenState();
 }
 
-class _MultipleAnimationsState extends State<MultipleAnimations>
-    with TickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _opacityAnimation;
-  late Animation<double> _scaleAnimation;
-  late Animation<Color?> _colorAnimation;
+class _ListScreenState extends State<ListScreen> {
+  double screenHeight = 0;
+  double screenWidth = 0;
+
+  bool startAnimation = false;
+
+  List<String> texts = [
+    "Monetization",
+    "Pie Chart",
+    "Flag",
+    "Notification",
+    "Savings",
+    "Cloud",
+    "Nightlight",
+    "Assignment",
+    "Location",
+    "Settings",
+    "Rocket",
+    "Backpack",
+    "Person",
+    "Done All",
+    "Search",
+    "Extension",
+    "Bluetooth",
+    "Favorite",
+    "Lock",
+    "Bookmark",
+  ];
+
+  List<IconData> icons = [
+    Icons.monetization_on,
+    Icons.pie_chart,
+    Icons.flag,
+    Icons.notifications,
+    Icons.savings,
+    Icons.cloud,
+    Icons.nightlight_round,
+    Icons.assignment,
+    Icons.location_pin,
+    Icons.settings,
+    Icons.rocket,
+    Icons.backpack,
+    Icons.person,
+    Icons.done_all,
+    Icons.search,
+    Icons.extension,
+    Icons.bluetooth,
+    Icons.favorite,
+    Icons.lock,
+    Icons.bookmark,
+  ];
 
   @override
   void initState() {
     super.initState();
 
-    // Definir el controlador de animación
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 2),
-    );
-
-    // Definir la animación de escala
-    _opacityAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
-
-    // Definir la animación de color
-    _colorAnimation = ColorTween(
-      begin: Colors.blue,
-      end: Colors.red,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.5,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
-
-    // Iniciar la animación
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    // Liberar recursos del controlador de animación
-    _controller.dispose();
-    super.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        startAnimation = true;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Multiple Animations'),
-      ),
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Opacity(
-              opacity: _opacityAnimation.value,
-              child: Transform.scale(
-                scale: _scaleAnimation.value,
-                child: Container(
-                  color: _colorAnimation.value,
-                  width: 200,
-                  height: 200,
+      backgroundColor: const Color(0xFF222431),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth / 20,
+          ),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 30,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Future.delayed(const Duration(milliseconds: 500), () {
+                    print("aa");
+                    setState(() {
+                      startAnimation = !startAnimation;
+                    });
+                  });
+                },
+                child: const Text(
+                  "SHOW LIST",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            );
-          },
+              const SizedBox(
+                height: 30,
+              ),
+              ListView.builder(
+                primary: false,
+                shrinkWrap: true,
+                itemCount: texts.length,
+                itemBuilder: (context, index) {
+                  return item(index);
+                },
+              ),
+              const SizedBox(
+                height: 50,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-}
 
-void main() {
-  runApp(MaterialApp(
-    home: MultipleAnimations(),
-  ));
+  Widget item(int index) {
+    return AnimatedContainer(
+      height: 55,
+      width: screenWidth,
+      curve: Curves.easeInOut,
+      duration: Duration(milliseconds: 300 + (index * 200)),
+      transform: Matrix4.translationValues(0, startAnimation ? 0 : 60, 0),
+      margin: const EdgeInsets.only(
+        bottom: 12,
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth / 20,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "${index + 1}. ${texts[index]}",
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Icon(
+            icons[index],
+          ),
+        ],
+      ),
+    );
+  }
 }
